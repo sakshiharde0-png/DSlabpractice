@@ -1,0 +1,33 @@
+library_data ={
+    "M001":["Book A", "Book B"],
+    "M002":["Book c"],
+    "M003":[],
+    "M004":["Book A", "Book A"],
+    "M005":[],
+    "M006":["Book B", "Book D"]
+}
+
+total_member = len(library_data)
+total_Books_borrowed = sum(len(Books) for Books in library_data.values())
+avarage = total_Books_borrowed / total_member
+print(avarage)
+
+all_books = []
+for books in library_data.values():
+    all_books.extend(books)
+    
+book_counts = {}
+for book in all_books:
+    if book in book_counts:
+        book_counts[book] += 1
+    else:
+        book_counts[book] = 1
+        
+most_borrowed = max(book_counts, key = book_counts.get)
+print(most_borrowed)
+
+least_borrowed = min(book_counts, key = book_counts.get)
+print(least_borrowed)
+
+
+print("most frequently borrowed", most_borrowed)

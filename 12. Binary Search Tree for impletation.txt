@@ -1,0 +1,148 @@
+class Node:
+    def __init__(self, city, population):
+        self.city = city
+        self.population = population
+        self.left = None
+        self.right = None
+
+
+class CityBST:
+    def __init__(self):
+        self.root = None
+
+    # --- INSERTION ---
+    def insert(self, root, city, population):
+        if root is None:
+            return Node(city, population)
+
+        if city.lower() < root.city.lower():
+            root.left = self.insert(root.left, city, population)
+        elif city.lower() > root.city.lower():
+            root.right = self.insert(root.right, city, population)
+        else:
+            print(f"{city} already exists! Updating population...")
+            root.population = population
+        return root
+
+    # --- SEARCH (returns node and comparison count) ---
+    def search(self, root, city):
+        comparisons = 0
+        current = root
+        while current:
+            comparisons += 1
+            if city.lower() == current.city.lower():
+                return current, comparisons
+            elif city.lower() < current.city.lower():
+                current = current.left
+            else:
+                current = current.right
+        return None, comparisons
+
+    # --- UPDATE POPULATION ---
+    def update_population(self, root, city, new_pop):
+        node, comp = self.search(root, city)
+        if node:
+            node.population = new_pop
+            print(f"Updated {city}'s population to {new_pop}. (Comparisons: {comp})")
+        else:
+            print(f"{city} not found in records. (Comparisons: {comp})")
+
+    # --- DELETE CITY ---
+    def delete(self, root, city):
+        if root is None:
+            return root
+
+        if city.lower() < root.city.lower():
+            root.left = self.delete(root.left, city)
+        elif city.lower() > root.city.lower():
+            root.right = self.delete(root.right, city)
+        else:
+            # Node to delete found
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+
+            # Node with two children
+            temp = self.min_value_node(root.right)
+            root.city, root.population = temp.city, temp.population
+            root.right = self.delete(root.right, temp.city)
+
+        return root
+
+    def min_value_node(self, node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+
+    # --- DISPLAY ASCENDING (A → Z) ---
+    def display_ascending(self, root):
+        if root:
+            self.display_ascending(root.left)
+            print(f"{root.city} → {root.population}")
+            self.display_ascending(root.right)
+
+    # --- DISPLAY DESCENDING (Z → A) ---
+    def display_descending(self, root):
+        if root:
+            self.display_descending(root.right)
+            print(f"{root.city} → {root.population}")
+            self.display_descending(root.left)
+
+
+# --- MAIN PROGRAM ---
+if __name__ == "__main__":
+    bst = CityBST()
+    root = None
+
+    while True:
+        print("\n=== City Population Management System ===")
+        print("1. Add / Update City")
+        print("2. Delete City")
+        print("3. Search City")
+        print("4. Update Population")
+        print("5. Display Cities (Ascending)")
+        print("6. Display Cities (Descending)")
+        print("7. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            city = input("Enter city name: ")
+            pop = int(input("Enter population: "))
+            root = bst.insert(root, city, pop)
+
+        elif choice == "2":
+            city = input("Enter city name to delete: ")
+            root = bst.delete(root, city)
+            print(f"{city} deleted (if existed).")
+
+        elif choice == "3":
+            city = input("Enter city name to search: ")
+            node, comp = bst.search(root, city)
+            if node:
+                print(f"{city} found with population {node.population}.")
+            else:
+                print(f"{city} not found.")
+            print(f"Comparisons made: {comp}")
+
+        elif choice == "4":
+            city = input("Enter city name: ")
+            pop = int(input("Enter new population: "))
+            bst.update_population(root, city, pop)
+
+        elif choice == "5":
+            print("\nCities in Ascending Order:")
+            bst.display_ascending(root)
+
+        elif choice == "6":
+            print("\nCities in Descending Order:")
+            bst.display_descending(root)
+
+        elif choice == "7":
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")

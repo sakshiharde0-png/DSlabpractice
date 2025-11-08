@@ -1,0 +1,98 @@
+# Binary Search Tree implementation in Python
+
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    # --- INSERTION ---
+    def insert(self, root, key):
+        if root is None:
+            return Node(key)
+        if key < root.key:
+            root.left = self.insert(root.left, key)
+        elif key > root.key:
+            root.right = self.insert(root.right, key)
+        return root
+
+    # --- SEARCH ---
+    def search(self, root, key):
+        if root is None or root.key == key:
+            return root
+        if key < root.key:
+            return self.search(root.left, key)
+        else:
+            return self.search(root.right, key)
+
+    # --- INORDER DISPLAY (sorted order) ---
+    def inorder(self, root):
+        if root:
+            self.inorder(root.left)
+            print(root.key, end=" ")
+            self.inorder(root.right)
+
+    # --- DELETION ---
+    def delete(self, root, key):
+        if root is None:
+            return root
+
+        # Find the node to delete
+        if key < root.key:
+            root.left = self.delete(root.left, key)
+        elif key > root.key:
+            root.right = self.delete(root.right, key)
+        else:
+            # Node with only one child or no child
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+
+            # Node with two children:
+            # Get inorder successor (smallest in the right subtree)
+            root.key = self.min_value_node(root.right).key
+            root.right = self.delete(root.right, root.key)
+        return root
+
+    def min_value_node(self, node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+
+
+# --- MAIN PROGRAM ---
+if __name__ == "__main__":
+    bst = BST()
+    root = None
+
+    # Insert nodes
+    data = [50, 30, 70, 20, 40, 60, 80]
+    for val in data:
+        root = bst.insert(root, val)
+
+    print("Inorder traversal of BST:")
+    bst.inorder(root)
+
+    # Search a value
+    key = 40
+    print(f"\n\nSearching for {key} in BST:")
+    result = bst.search(root, key)
+    if result:
+        print(f"{key} found in BST.")
+    else:
+        print(f"{key} not found in BST.")
+
+    # Delete a value
+    delete_key = 30
+    print(f"\nDeleting {delete_key} from BST...")
+    root = bst.delete(root, delete_key)
+
+    print("Inorder traversal after deletion:")
+    bst.inorder(root)
